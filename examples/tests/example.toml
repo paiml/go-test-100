@@ -1,0 +1,12 @@
+[example]
+title = "Tests"
+summary = "table tests, a fuzz target and a fake store, all at 100%"
+run = "go test -cover ./..."
+
+[[files]]
+path = "../../money/money_test.go"
+note = "table test and fuzz target"
+
+[[files]]
+path = "../../ledger/ledger_test.go"
+note = "a fake store that fails on demand"

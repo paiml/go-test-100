@@ -1,0 +1,12 @@
+[course]
+slug = "go-test-100"
+number = 3
+title = "Testing to 100%"
+tagline = "Table tests, fuzzing and a coverage gate that cannot be fooled."
+description = "Tested Go code for the third course of the Go specialization: table-driven tests, subtests, a fuzz target, fakes, and a 100% gate with a 0% falsifier."
+prerequisites = ["Go 1.21 or newer", "Course 1: Go from Zero"]
+
+[[examples]]
+dir = "examples/tests"
+title = "Tests"
+summary = "table tests, a fuzz target and a fake store, all at 100%"

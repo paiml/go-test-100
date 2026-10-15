@@ -1,0 +1,59 @@
+metadata:
+  version: "1.0.0"
+  author: "paiml"
+  description: "go-test-100 contracts: boundaries, round-trips and failing stores"
+  kind: pattern
+  crate: "go-test-100"
+  references:
+    - "The Go Programming Language Specification"
+
+equations:
+  grade_monotone:
+    formula: "a <= b ⇒ rank(Letter(a)) <= rank(Letter(b)) for scores in 0..100"
+    domain: "a, b ∈ [0, 100]"
+    invariants:
+      - "scores outside 0..100 return ErrRange"
+  money_roundtrip:
+    formula: "Parse(Format(c)) = c for c >= 0"
+    domain: "c ∈ int, c >= 0"
+    invariants:
+      - "Parse rejects anything that is not dollars.cents"
+  ledger_total:
+    formula: "Total() = sum of every successfully added amount"
+    domain: "amounts ∈ []int, each > 0"
+    invariants:
+      - "a failed Save leaves the total unchanged"
+
+proof_obligations:
+  - type: invariant
+    property: "Every Parse result that succeeds survives a Format round trip"
+    formal: "Parse(Format(Parse(s))) = Parse(s)"
+    applies_to: all
+  - type: bound
+    property: "Letters change only at 90, 80, 70 and 60"
+    formal: "Letter(n) = Letter(n-1) unless n ∈ {90, 80, 70, 60}"
+    applies_to: all
+
+falsification_tests:
+  - id: FALSIFY-GOTEST100-001
+    rule: "grade boundaries"
+    test: "TestLetter"
+    prediction: "each boundary scores the higher letter, the score below scores the lower"
+    if_fails: "Contract violation — boundary off by one"
+  - id: FALSIFY-GOTEST100-002
+    rule: "money round trip"
+    test: "FuzzRoundTrip"
+    prediction: "no input parses then fails to round-trip"
+    if_fails: "Contract violation — Format loses information"
+  - id: FALSIFY-GOTEST100-003
+    rule: "failing store"
+    test: "TestAddErrors"
+    prediction: "a load or save failure surfaces wrapped, never swallowed"
+    if_fails: "Contract violation — store error swallowed"
+
+qa_gate:
+  id: QA-GOTEST100
+  name: "go-test-100 contracts"
+  min_coverage: 0.90
+  max_complexity: 20
+  required_tests: ["TestLetter", "TestAddErrors"]
