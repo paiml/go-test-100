@@ -14,7 +14,8 @@ func TestParse(t *testing.T) {
 		{"12.34", 1234, nil}, {"0.05", 5, nil}, {"7.00", 700, nil},
 		{"12", 0, ErrFormat}, {"12.3", 0, ErrFormat}, {".50", 0, ErrFormat},
 		{"1x.50", 0, ErrFormat}, {"1.5x", 0, ErrFormat}, {"-1.00", 0, ErrFormat},
-		{"99999999999999999999.00", 0, ErrFormat},
+		{"99999999999999999999.00", 0, ErrFormat}, {"100000000000000000.00", 0, ErrFormat},
+		{"999999999999.99", 99999999999999, nil},
 	}
 	for _, c := range cases {
 		got, err := Parse(c.in)

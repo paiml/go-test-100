@@ -9,13 +9,16 @@ import (
 	"strings"
 )
 
+// maxWhole keeps dollars*100 far from int overflow.
+const maxWhole = 12
+
 // ErrFormat is returned for text that is not dollars.cents.
 var ErrFormat = errors.New("want dollars.cents, such as 12.34")
 
 // Parse reads "12.34" into 1234 cents. Negative amounts are not allowed.
 func Parse(s string) (int, error) {
 	whole, frac, ok := strings.Cut(s, ".")
-	if !ok || len(frac) != 2 || whole == "" {
+	if !ok || len(frac) != 2 || whole == "" || len(whole) > maxWhole {
 		return 0, ErrFormat
 	}
 	for _, part := range []string{whole, frac} {
@@ -25,10 +28,7 @@ func Parse(s string) (int, error) {
 			}
 		}
 	}
-	d, err := strconv.Atoi(whole)
-	if err != nil {
-		return 0, ErrFormat
-	}
+	d, _ := strconv.Atoi(whole) // at most maxWhole digits, all checked above
 	c, _ := strconv.Atoi(frac)
 	return d*100 + c, nil
 }
